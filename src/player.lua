@@ -1,6 +1,6 @@
 Player = Object:extend()
 
-local left, up, right, down = 1, 2, 3, 4
+local left, down, right, up = 1, 2, 3, 4
 local speed = 5
 
 function Player:new(x, y)
@@ -9,30 +9,32 @@ function Player:new(x, y)
   self.xprevious = self.x
   self.yprevious = self.y
   self.direction = 0
+  self.aimdirection = 0
   self.moving = false
 end
 
 function Player:update(dt)
+  self:setAim()
   --Stop when the grid is reached, unless the player is holding a direction button
   if self:isOnGrid() then
     --The isOnGrid check is not that precise. Correct put us back on the grid if we drifted off a little
     self:correctPosition()
 
     --Check if we need to stop
-    if love.keyboard.isDown("left", "up", "right", "down") then
+    if love.keyboard.isDown("left", "up", "right", "down", "a", "w", "d", "s") then
       self.moving = true
     else
       self.moving = false
     end
 
     --Set the direction of movement
-    if love.keyboard.isDown("left") then
+    if love.keyboard.isDown("left", "a") then
       self.direction = left
-    elseif love.keyboard.isDown("up") then
+    elseif love.keyboard.isDown("up", "w") then
       self.direction = up
-    elseif love.keyboard.isDown("right") then
+    elseif love.keyboard.isDown("right", "d") then
       self.direction = right
-    elseif love.keyboard.isDown("down") then
+    elseif love.keyboard.isDown("down", "s") then
       self.direction = down
     end
   end
@@ -58,6 +60,17 @@ function Player:draw()
   love.graphics.rectangle("line", self.x, self.y, gridsize-1, gridsize-1)
   love.graphics.setColor(colors.red)
   love.graphics.rectangle("fill", self.x, self.y, gridsize-1, gridsize-1)
+
+  love.graphics.printf(self.aimdirection,0,0,300,"left")
+  if self.aimdirection == left then
+    love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2-200, self.y+gridsize/2)
+  elseif self.aimdirection == up then
+    love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2, self.y+gridsize/2-200)
+  elseif self.aimdirection == right then
+    love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2+200, self.y+gridsize/2)
+  elseif self.aimdirection == down then
+    love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2, self.y+gridsize/2+200)
+  end
 end
 
 function Player:stop()
@@ -104,4 +117,17 @@ function Player:bounce()
   self.x = self.xprevious
   self.y = self.yprevious
   self.moving = false
+end
+
+function Player:setAim()
+  local deltaX = love.mouse.getX() - self.x
+  local deltaY = love.mouse.getY() - self.y
+  local direction = math.atan2(deltaX, deltaY)+2
+  if direction < 0 or direction > 4 then
+    self.aimdirection = 4
+  elseif direction < 1 then
+    self.aimdirection = 1
+  else
+    self.aimdirection = math.floor(direction)
+  end
 end

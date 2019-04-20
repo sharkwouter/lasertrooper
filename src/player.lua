@@ -53,15 +53,15 @@ function Player:update(dt)
       self.y = self.y+speed
     end
   end
+
+  --Stop at the edge of the level
 end
 
 function Player:draw()
-  love.graphics.setColor(colors.black)
-  love.graphics.rectangle("line", self.x, self.y, gridsize-1, gridsize-1)
   love.graphics.setColor(colors.red)
-  love.graphics.rectangle("fill", self.x, self.y, gridsize-1, gridsize-1)
+  love.graphics.rectangle("fill", self.x, self.y, gridsize, gridsize)
 
-  love.graphics.printf(self.aimdirection,0,0,300,"left")
+  --Draw laser
   if self.aimdirection == left then
     love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2-200, self.y+gridsize/2)
   elseif self.aimdirection == up then
@@ -71,11 +71,6 @@ function Player:draw()
   elseif self.aimdirection == down then
     love.graphics.line(self.x+gridsize/2, self.y+gridsize/2, self.x+gridsize/2, self.y+gridsize/2+200)
   end
-end
-
-function Player:stop()
-  self.moving = false
-  self:snap()
 end
 
 function Player:correctPosition()

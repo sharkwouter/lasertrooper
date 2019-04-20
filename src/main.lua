@@ -3,7 +3,7 @@ function love.load()
   Object = require "libraries/classic"
 
   --Global variables
-gridsize = 64
+  gridsize = 80
 
   --Color variables
   colors={
@@ -31,30 +31,35 @@ gridsize = 64
   love.graphics.setFont(font)
 
   --Set the window title
+  love.window.setMode(gridsize*20, gridsize*15)
   love.window.setTitle("Laser Trooper")
 
   --Load level
-  currentlevel = Level({
-    {3,3,3,3,3,3,3,3,3,3},
-    {3,1,0,0,0,0,0,0,0,3},
-    {3,0,0,3,2,2,3,0,0,3},
-    {3,0,0,0,0,3,0,0,0,3},
-    {3,0,0,0,0,0,0,0,0,3},
-    {3,0,0,0,0,0,0,0,0,3},
-    {3,0,0,0,0,0,0,0,0,3},
-    {3,0,0,0,0,0,0,0,0,3},
-    {3,0,0,0,0,0,0,0,0,3},
-    {3,3,3,3,3,3,3,3,3,3}
-  })
+  currentlevel = 1
+  level = Level(currentlevel)
 end
 
 function love.update(dt)
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
-  currentlevel:update(dt)
+
+  if not pressed then
+      pressed = false
+    end
+    if love.keyboard.isDown("n") then
+      if pressed == false then
+        currentlevel = currentlevel + 1
+        level = Level(currentlevel)
+        pressed = true
+      end
+    else
+      pressed = false
+    end
+
+  level:update(dt)
 end
 
 function love.draw()
-  currentlevel:draw()
+  level:draw()
 end
